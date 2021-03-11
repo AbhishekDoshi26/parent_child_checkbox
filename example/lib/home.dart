@@ -7,13 +7,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  String parentName = 'Flutter Channels';
+  List<String> children = ['Stable', 'Master', 'Beta', 'Dev'];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Material App Bar'),
+        title: Text('Parent Child Checkbox'),
       ),
-      body: Center(child: ParentChildCheckboxes()),
+      body: Center(
+        child: ParentChildCheckboxes(
+          parentName: parentName,
+          children: children,
+        ),
+      ),
     );
   }
 }

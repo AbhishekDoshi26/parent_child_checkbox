@@ -4,48 +4,58 @@ import 'package:flutter/material.dart';
 import 'custom_labeled_checkbox.dart';
 
 class ParentChildCheckboxes extends StatefulWidget {
+  ///List of children checkboxes
+  final List<String>? children;
+
+  ///Name or Label of the Parent Checkbox
+  final String? parentName;
+
+  ///Parent Active Color
+  final Color parentActiveColor;
+
+  ///Child Active Color
+  final Color childActiveColor;
+  ParentChildCheckboxes({
+    this.children,
+    this.parentName,
+    this.parentActiveColor = Colors.blue,
+    this.childActiveColor = Colors.blueAccent,
+  });
   @override
   _ParentChildCheckboxesState createState() => _ParentChildCheckboxesState();
 }
 
 class _ParentChildCheckboxesState extends State<ParentChildCheckboxes> {
-  bool _parentValue;
-  List<String> _children;
-  List<bool> _childrenValue;
+  ///Children Value
+  late List<bool> _childrenValue;
 
+  ///Parent Value
+  bool? _parentValue;
+
+  ///Manages the tristate of the checkbox
   void _manageTristate(int index, bool value) {
     setState(() {
-      if (value) {
-        // selected
-        _childrenValue[index] = true;
-        // Checking if all other children are also selected -
-        if (_childrenValue.contains(false)) {
-          // No. Parent -> tristate.
-          _parentValue = null;
-        } else {
-          // Yes. Select all.
-          _checkAll(true);
-        }
+      // selected
+      _childrenValue[index] = value;
+      // Checking if all other children are also selected -
+      if (_childrenValue.contains(!value)) {
+        // No. Parent -> tristate.
+        _parentValue = null;
       } else {
-        // unselected
-        _childrenValue[index] = false;
-        // Checking if all other children are also unselected -
-        if (_childrenValue.contains(true)) {
-          // No. Parent -> tristate.
-          _parentValue = null;
-        } else {
-          // Yes. Unselect all.
-          _checkAll(false);
-        }
+        // Yes. Select all.
+        setState(() {
+          _parentValue = value;
+          _checkAll(value);
+        });
       }
     });
   }
 
+  //Selects or deselects all depending on the value
   void _checkAll(bool value) {
     setState(() {
       _parentValue = value;
-
-      for (int i = 0; i < _children.length; i++) {
+      for (int i = 0; i < widget.children!.length; i++) {
         _childrenValue[i] = value;
       }
     });
@@ -53,83 +63,40 @@ class _ParentChildCheckboxesState extends State<ParentChildCheckboxes> {
 
   @override
   void initState() {
-    super.initState();
-
     _parentValue = false;
-
-    _children = [
-      'Pickles',
-      'Tomato',
-      'Lettuce',
-      'Cheese',
-    ];
-
-    /*
-    * There are four children, so there should be a list of 4 bool values to
-    * manage their states. This generates and assigns the
-    * _childrenValue = [false, false, false, false].
-    * */
-    _childrenValue = List.generate(_children.length, (index) => false);
+    _childrenValue = List.generate(widget.children!.length, (index) => false);
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    final themeData = Theme.of(context);
-
-    return Scaffold(
-      backgroundColor: Colors.grey.shade300,
-      appBar: _buildAppBar(),
-      body: _buildBody(themeData),
-    );
-  }
-
-  PreferredSizeWidget _buildAppBar() {
-    return AppBar(
-      title: Text('Parent-Child Checkboxes'),
-      centerTitle: false,
-    );
-  }
-
-  Widget _buildBody(ThemeData themeData) {
-    return ListView(
+    return Column(
       children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.fromLTRB(24, 24, 16, 12),
-          child: Text(
-            'Meal options',
-            style: themeData.textTheme.bodyText1.copyWith(
-              color: Colors.black87,
-            ),
-          ),
-        ),
         CustomLabeledCheckbox(
-          label: 'Additons',
+          label: widget.parentName!,
           value: _parentValue,
           onChanged: (value) {
             if (value != null) {
-              // Checked/Unchecked
               _checkAll(value);
             } else {
-              // Tristate
               _checkAll(true);
             }
           },
           checkboxType: CheckboxType.Parent,
-          activeColor: Colors.indigo,
+          activeColor: widget.parentActiveColor,
         ),
         ListView.builder(
-          itemCount: _children.length,
+          itemCount: widget.children!.length,
           itemBuilder: (context, index) => CustomLabeledCheckbox(
-            label: _children[index],
+            label: widget.children![index],
             value: _childrenValue[index],
             onChanged: (value) {
-              _manageTristate(index, value);
+              _manageTristate(index, value!);
             },
             checkboxType: CheckboxType.Child,
-            activeColor: Colors.indigo,
+            activeColor: widget.childActiveColor,
           ),
           shrinkWrap: true,
-          physics: ClampingScrollPhysics(),
         ),
       ],
     );
