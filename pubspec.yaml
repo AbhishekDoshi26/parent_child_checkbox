@@ -1,8 +1,8 @@
 name: parent_child_checkbox
 description: Parent Child Checkbox is a package that allows you to create a heirarchical relationship between checkboxes. This is based on the Material Design rules which you can checkout at https://material.io/components/selection-controls#checkboxes
 version: 0.0.1
-author:
-homepage:
+homepage: https://abhishekdoshi.netlify.app
+repository: https://github.com/AbhishekDoshi26/parent_child_checkbox
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
